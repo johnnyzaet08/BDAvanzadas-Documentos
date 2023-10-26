@@ -1,0 +1,91 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Modificar/Eliminar una Solicitud de Viaje</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+   <script src="{{ url_for('static', filename='javascript/register_travel.js') }}"></script>
+</head>
+
+<body>
+
+   <section class="get-in-touch">
+      <h1 class="title">Modificar/Eliminar una Solicitud de Viaje</h1>
+      <form id="travelRequestForm" class="contact-form row">
+         <div class="form-field col x-100">
+            <input id="id" class="input-text js-input" type="text" required>
+            <label class="label" for="id">ID de Solicitud</label>
+         </div>
+         <!-- Resto de los campos del formulario -->
+         <div class="form-field col x-100 align-center">
+            <label id="add-btn" class="submit-btn">BUSCAR</label>
+            <label id="add-btn" class="submit-btn hide-form">Eliminar</label>
+         </div>
+         <form id="travelRequestForm" class="contact-form row">
+            <div class="form-field col x-100 hide-form">
+               <input id="nombre" class="input-text js-input" type="text" required>
+               <label class="label" for="nombre">Nombre completo</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="puesto" class="input-text js-input" type="text" required>
+               <label class="label" for="puesto">Puesto</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="departamento" class="input-text js-input" type="text" required>
+               <label class="label" for="departamento">Departamento</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <select id="tipo_viaje" class="input-text js-input">
+                  <option value="nacional">Nacional</option>
+                  <option value="internacional">Internacional</option>
+               </select>
+               <label class="label" for="tipo_viaje">Tipo de Viaje</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="pais_destino" class="input-text js-input" type="text" required>
+               <label class="label" for="pais_destino">País de destino</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="motivo" class="input-text js-input" type="text" required>
+               <label class="label" for="motivo">Motivo del viaje</label>
+            </div>
+            <div class="form-field col x-50 hide-form">
+               <input id="fecha_inicio" class="input-text js-input" type="date" required>
+               <label class="label" for="fecha_inicio">Fecha de inicio</label>
+            </div>
+            <div class="form-field col x-50 hide-form">
+               <input id="fecha_fin" class="input-text js-input" type="date" required>
+               <label class="label" for="fecha_fin">Fecha de finalización</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="aerolinea" class="input-text js-input" type="text" required>
+               <label class="label" for="aerolinea">Aerolínea</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="precio_boletos" class="input-text js-input" type="number" required>
+               <label class="label" for="precio_boletos">Precio de boletos</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <input id="alojamiento" class="input-text js-input" type="text" required>
+               <label class="label" for="alojamiento">Alojamiento</label>
+            </div>
+            <div class="form-field col x-100 hide-form">
+               <select id="requiere_transporte" class="input-text js-input">
+                  <option value="si">Sí</option>
+                  <option value="no">No</option>
+               </select>
+               <label class="label" for="requiere_transporte">¿Requiere transporte?</label>
+            </div>
+            <div class="form-field col x-100 align-center hide-form">
+               <label id="add-btn" class="submit-btn">Modificar</label>
+            </div>
+         </form>
+      </form>
+   </section>
+</body>
+</html>
+{% endblock %}

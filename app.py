@@ -43,15 +43,15 @@ def logout():
 
 @app.route("/register_travel")
 def register_travel():
-    if not check_authentication():
-        return redirect(url_for("login"))
+    #if not check_authentication():
+    #    return redirect(url_for("login"))
     return render_template("register_travel.html")
 
 @app.route("/modify_travel")
 def modify_travel():
-    if not check_authentication():
-        return redirect(url_for("login"))
-    return render_template("modify_travel.html")
+    #if not check_authentication():
+    #    return redirect(url_for("login"))
+    return render_template("modify_eliminate_travel.html")
 
 @app.route("/travel_history")
 def travel_history():
