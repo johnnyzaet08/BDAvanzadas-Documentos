@@ -24,7 +24,6 @@ def get_mongodb_db():
 
 
 ################################################ ADD / UPDATE ###########################################
-
 @socketio.on("usersAPI/add")
 def addUser(nombre, correo, contraseña, tipo, puesto=None, departamento=None):
     db = get_mongodb_db()
@@ -42,7 +41,17 @@ def addUser(nombre, correo, contraseña, tipo, puesto=None, departamento=None):
     except Exception as e:
         socketio.emit("usersAPI", e)
 
-
+#### GET usuarios
+@socketio.on("usersAPI/get")
+def getUsers():
+    db = get_mongodb_db()
+    try:
+        users = list(db.usuarios.find({}))
+        socketio.emit("usersAPI/get", users)
+    except Exception as e:
+        socketio.emit("usersAPI", e)
+################################################### Solicitudes
+### Add a solicitud
 @socketio.on("requestsAPI/add")
 def addRequest(usuario_id, internacional, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte):
     db = get_mongodb_db()
@@ -65,14 +74,43 @@ def addRequest(usuario_id, internacional, pais_destino, motivo, fecha_inicio, fe
     except Exception as e:
         socketio.emit("requestsAPI", e)
 
+#### Change status
+@socketio.on("requestsAPI/estado")
+def changeEstado(usuario_id, estado):
+    db = get_mongodb_db()
+    try:
+        estadoUpdate = { "estado" : estado}
+        user =db.solicitudes.updateOne({'usuario_id': usuario_id},{'$set': estadoUpdate})
+        socketio.emit("usersAPI/get", user)
+    except Exception as e:
+        socketio.emit("requestsAPI", e)
 
-@socketio.on("usersAPI/get")
+### Update a solicitud
+@socketio.on("requestsAPI/update")
+def addRequest(usuario_id, updated_data):
+    db = get_mongodb_db()
+    try:
+        db.solicitudes.updateOne({'usuario_id': usuario_id},{'$set': updated_data})
+        socketio.emit("requestsAPI", "Successful Updated")
+    except Exception as e:
+        socketio.emit("requestsAPI", e)
+
+##### Get solicitudes
+@socketio.on("requestsAPI/get")
 def getUsers():
     db = get_mongodb_db()
     try:
-        users = list(db.usuarios.find({}))
-        socketio.emit("usersAPI/get", users)
+        users = list(db.solicitudes.find({}))
+        socketio.emit("requestsAPI/get", users)
     except Exception as e:
-        socketio.emit("usersAPI", e)
+        socketio.emit("requestsAPI", e)
 
-# You can continue adding more socket endpoints for other functionalities as needed.
+#### delete solicitud
+@socketio.on("requestsAPI/deleteOne")
+def changeEstado(usuario_id):
+    db = get_mongodb_db()
+    try:
+        user =db.solicitudes.deleteOne({'usuario_id': usuario_id})
+        socketio.emit("requestsAPI", "Successful deleted")
+    except Exception as e:
+        socketio.emit("requestsAPI", e)
