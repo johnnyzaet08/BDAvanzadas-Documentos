@@ -41,15 +41,28 @@ def addUser(nombre, correo, contraseña, tipo, puesto=None, departamento=None):
     except Exception as e:
         socketio.emit("usersAPI", e)
 
+#### GET usuarios name by id
+@socketio.on("usersAPI/get")
+def getUsers(id):
+    db = get_mongodb_db()
+    try:
+        users = list(db.usuarios.find({'id': id}, { nombre:1}))
+        socketio.emit("usersAPI/get", users)
+    except Exception as e:
+        socketio.emit("usersAPI", e)
+
+
 #### GET usuarios
 @socketio.on("usersAPI/get")
 def getUsers():
     db = get_mongodb_db()
     try:
-        users = list(db.usuarios.find({}))
+        users = list(db.usuarios.findOne({}))
         socketio.emit("usersAPI/get", users)
     except Exception as e:
         socketio.emit("usersAPI", e)
+
+
 ################################################### Solicitudes
 ### Add a solicitud
 @socketio.on("requestsAPI/add")
@@ -112,5 +125,15 @@ def changeEstado(usuario_id):
     try:
         user =db.solicitudes.deleteOne({'usuario_id': usuario_id})
         socketio.emit("requestsAPI", "Successful deleted")
+    except Exception as e:
+        socketio.emit("requestsAPI", e)
+
+##### consultar un destino especifico
+@socketio.on("requestsAPI/get")
+def getUsers(destino):
+    db = get_mongodb_db()
+    try:
+        users = list(db.solicitudes.find({'pais_destino': destino}, {fecha_inicio :1,motivo: 1, usuario_id:1 }))
+        socketio.emit("requestsAPI/get", users)
     except Exception as e:
         socketio.emit("requestsAPI", e)
