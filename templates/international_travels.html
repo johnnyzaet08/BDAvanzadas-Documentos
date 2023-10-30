@@ -1,0 +1,41 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Consultar viajes internacionales programados</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+   <script src="{{ url_for('static', filename='javascript/international_travels.js') }}"></script>
+</head>
+<body>
+   <section class="get-in-touch">
+      <h1 class="title">Consultar viajes internacionales programados</h1>
+      <form id="ScheduledTravelsForm" class="contact-form row">
+        <row>
+            <div class="form-field col x-50">
+                <label for="trimestre">Trimestre</label>
+                <select id="trimestre" class="input-text js-input" required>
+                    <option value="1">Enero - Marzo</option>
+                    <option value="2">Abril - Junio</option>
+                    <option value="3">Julio - Septiembre</option>
+                    <option value="4">Octubre - Diciembre</option>
+                </select>
+            </div>
+            
+            <div class="form-field col x-50">
+                <label for="ano">Año</label>
+                <input id="ano" class="input-text js-input" type="number" min="1900" max="2200" required>
+            </div>        
+        </row>   
+        <div class="form-field col x-100 align-center">
+           <label id="find-btn" class="submit-btn">Buscar</label>
+        </div>
+     </form>
+   </section>
+   <div id="form-container"></div>
+</body>
+</html>
+{% endblock %}

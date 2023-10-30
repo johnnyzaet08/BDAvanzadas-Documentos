@@ -172,6 +172,14 @@ table th {
 }
 
 #form-container {
-  max-width: 800px; /* Puedes ajustar el ancho máximo según tus necesidades */
-  margin: 0 auto; /* Centra el contenedor horizontalmente */
+  width: 80%; /* Define el ancho del div */
+  margin: 0 auto; /* Centra el div horizontalmente */
+}
+.action-button {
+  width: 100px; /* Establece el ancho deseado para los botones */
+  position: center;
+}
+.subtitle {
+  width: 100%; /* Define el ancho del div */
+  position: center;
 }

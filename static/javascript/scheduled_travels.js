@@ -11,23 +11,22 @@ window.onload = function() {
     //Hay que sacar los valores de la base de datos, aqui esta un ejemplo basico
 
     if (esFalso) {
-        var test = [["1","Aldo Cambronero","Jefe","Devel","Nacional","CR","500","19/5/2023","25/5/2023","Avianca","501","XD","si","Pendiente"], 
-        ["2","Aldo Cambronero","Jefe","Devel","Nacional","CR","500","19/5/2023","25/5/2023","Avianca","501","XD","si","Aprobada"],
-        ["3","Aldo Cambronero","Jefe","Devel","Nacional","CR","500","19/5/2023","25/5/2023","Avianca","501","XD","si","Rechazada"]];
+        var test = 
+        [["Aldo Cambronero","Devel"], 
+        ["Aldo Cambronero","Devel"],
+        ["Aldo Cambronero","Devel"]];
 
         var table = document.createElement("table");
         table.className = "data-table";
 
         // Crea la fila de encabezados de la tabla
         var headerRow = document.createElement("tr");
-        ["ID", "Nombre completo", "Puesto", "Departamento", "Internacional", "País de destino", "Motivo del viaje", "Inicio", "Finalización", "Aerolínea", "Precio", "Alojamiento", "Transporte", "Estado"].forEach(function(headerText) {
+        ["Nombre completo", "Departamento"].forEach(function(headerText) {
             var headerCell = document.createElement("th");
             headerCell.textContent = headerText;
             // Aplica estilos CSS a las celdas de encabezado
             headerCell.style.backgroundColor = "lightblue"; // Cambia el color de fondo
             headerCell.style.color = "black"; // Cambia el color del texto
-
-
             headerRow.appendChild(headerCell);
         });
         table.appendChild(headerRow);
@@ -50,4 +49,3 @@ window.onload = function() {
         formContainer.appendChild(message);
     }
 };
-
