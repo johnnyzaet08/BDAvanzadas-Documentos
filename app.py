@@ -55,9 +55,9 @@ def modify_travel():
 
 @app.route("/travel_history")
 def travel_history():
-    if not check_authentication():
-        return redirect(url_for("login"))
-    return render_template("travel_history.html")
+    #if not check_authentication():
+    #    return redirect(url_for("login"))
+    return render_template("history_request.html")
 
 @app.route("/admin/evaluate_request")
 def evaluate_request():
