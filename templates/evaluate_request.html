@@ -1,0 +1,20 @@
+{% extends "header.html" %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+   <title>Valorar Solicitud</title>
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/forms.css') }}">
+   <script src="{{ url_for('static', filename='javascript/evaluate_request.js') }}"></script>
+</head>
+<body>
+   <section class="get-in-touch">
+      <h1 class="title">Valorar Solicitud</h1>
+   </section>
+   <div id="form-container"></div>
+</body>
+</html>
+{% endblock %}

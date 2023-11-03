@@ -129,11 +129,62 @@ def changeEstado(usuario_id):
         socketio.emit("requestsAPI", e)
 
 ##### consultar un destino especifico
-@socketio.on("requestsAPI/get")
-def getUsers(destino):
+@socketio.on("requestsAPI/getDestine")
+def getDestino(destino):
     db = get_mongodb_db()
     try:
         users = list(db.solicitudes.find({'pais_destino': destino}, {fecha_inicio :1,motivo: 1, usuario_id:1 }))
         socketio.emit("requestsAPI/get", users)
+    except Exception as e:
+        socketio.emit("requestsAPI", e)
+    
+##### consultar un viajes programados
+@socketio.on("requestsAPI/programedTravels")
+def getTravels(mes, año):
+    db = get_mongodb_db()
+    try:
+        solicitudesAprobadas =  db.solicitudes.find({'estado': 'Aprobada', 'fecha_inicio': { '$gte': f'{año}-{mes:02d}-01', '$lt': f'{año}-{mes+1:02d}-01'}})
+        usuarios =[]
+        for solicitud in solicitudes_aprobadas:
+            usuario = db.usuarios.findOne({ 'usuario_id': solicitud['usuario_id'] })
+            usuarios.append({
+                'nombre': usuario.nombre,
+                'Departamento': usuario.departamento
+            })
+        socketio.emit("requestsAPI/get", usuarios)
+    except Exception as e:
+        socketio.emit("requestsAPI", e)
+
+### Consultar viajes internacionales
+@socketio.on("requestsAPI/InternationalTravels")
+def getTravelsInternacional(trimestre, año):
+    if trimestre == 1:
+        start_date = datetime(año, 1, 1)
+        end_date = datetime(año, 3, 31)
+    elif trimestre == 2:
+        start_date = datetime(año, 4, 1)
+        end_date = datetime(año, 6, 30)
+    elif trimestre == 3:
+        start_date = datetime(año, 7, 1)
+        end_date = datetime(año, 9, 30)
+    elif trimestre == 4:
+        start_date = datetime(año, 10, 1)
+        end_date = datetime(año, 12, 31)
+    else:
+        print("Trimestre no válido.")
+        return
+    try:
+        solicitudes_internacionales = db.solicitudes.find({'internacional': True,'fecha_inicio': {'$gte': start_date, '$lte': end_date}})
+        usuarios = []
+        for solicitud in solicitudes_internacionales:
+            usuario = db.usuarios.find_one({'usuario_id': solicitud['usuario_id']})
+            if usuario:
+                usuarios.append({
+                    'nombre' : usuario['nombre'],
+                    'pais_destino' : solicitud['pais_destino']
+                })
+                print(f'Nombre del colaborador: {nombre}, País de destino: {pais_destino}')
+        
+        socketio.emit("requestsAPI/getInternationalTravels", usuarios)
     except Exception as e:
         socketio.emit("requestsAPI", e)

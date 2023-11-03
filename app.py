@@ -55,32 +55,32 @@ def modify_travel():
 
 @app.route("/travel_history")
 def travel_history():
-    if not check_authentication():
-        return redirect(url_for("login"))
-    return render_template("travel_history.html")
+    #if not check_authentication():
+    #    return redirect(url_for("login"))
+    return render_template("history_request.html")
 
 @app.route("/admin/evaluate_request")
 def evaluate_request():
-    if not check_authentication():  # Add additional check for admin role
-        return redirect(url_for("login"))
+    #if not check_authentication():  # Add additional check for admin role
+    #    return redirect(url_for("login"))
     return render_template("evaluate_request.html")
 
 @app.route("/admin/scheduled_travels")
 def scheduled_travels():
-    if not check_authentication():  # Add additional check for admin role
-        return redirect(url_for("login"))
+    #if not check_authentication():  # Add additional check for admin role
+    #    return redirect(url_for("login"))
     return render_template("scheduled_travels.html")
 
 @app.route("/admin/international_travels")
 def international_travels():
-    if not check_authentication():  # Add additional check for admin role
-        return redirect(url_for("login"))
+    #if not check_authentication():  # Add additional check for admin role
+    #    return redirect(url_for("login"))
     return render_template("international_travels.html")
 
 @app.route("/admin/specific_destination")
 def specific_destination():
-    if not check_authentication():  # Add additional check for admin role
-        return redirect(url_for("login"))
+    #if not check_authentication():  # Add additional check for admin role
+    #    return redirect(url_for("login"))
     return render_template("specific_destination.html")
 
 if __name__ == '__main__':
