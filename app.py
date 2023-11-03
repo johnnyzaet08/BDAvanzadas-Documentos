@@ -11,14 +11,14 @@ def check_authentication():
 
 @app.route("/")
 def index():
-    if check_authentication():
-        return redirect(url_for("home"))
+    #if check_authentication():
+    #    return redirect(url_for("home"))
     return redirect(url_for("login"))
 
 @app.route("/home")
 def home():
-    if not check_authentication():
-        return redirect(url_for("login"))
+    # if not check_authentication():
+    #    return redirect(url_for("login"))
     return render_template("home.html")
 
 @app.route("/login", methods=["GET", "POST"])
