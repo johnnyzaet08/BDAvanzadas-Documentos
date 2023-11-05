@@ -12,15 +12,21 @@
     </div>
 
     <form method="POST" action="/login">
-        <h3> Login Here </h3>
+        <h3> Register Here </h3>
         <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
+        <input type="text" id="username" name="username" required><br>
 
         <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
+        <input type="password" id="password" name="password" required><br>
+
+        <label class="label" for="tipo_cuenta">Tipo de Cuenta</label>
+        <select id="tipo_cuenta" class="disabled" name="tipo_cuenta" required><br><br>
+            <option value="colaborador">Colaborador</option>
+            <option value="administrador">Administrador</option>
+         </select>
     
-        <button class="button-12">Log In</button>
-        <a class="button-12" href="/register">Register</a>
+        <button class="button-12">Register</button>
+        <a class="button-12" href="/login">Log In</a>
     </form>
     
     <script>

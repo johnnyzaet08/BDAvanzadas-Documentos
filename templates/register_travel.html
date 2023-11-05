@@ -28,7 +28,7 @@
             <label class="label" for="departamento">Departamento</label>
          </div>
          <div class="form-field col x-100">
-            <select id="tipo_viaje" class="input-text js-input">
+            <select id="tipo_viaje" class="input-text js-input not-empty">
                <option value="nacional">Nacional</option>
                <option value="internacional">Internacional</option>
             </select>
@@ -43,11 +43,11 @@
             <label class="label" for="motivo">Motivo del viaje</label>
          </div>
          <div class="form-field col x-50">
-            <input id="fecha_inicio" class="input-text js-input" type="date" required>
+            <input id="fecha_inicio" class="input-text js-input not-empty" type="date" required>
             <label class="label" for="fecha_inicio">Fecha de inicio</label>
          </div>
          <div class="form-field col x-50">
-            <input id="fecha_fin" class="input-text js-input" type="date" required>
+            <input id="fecha_fin" class="input-text js-input not-empty" type="date" required>
             <label class="label" for="fecha_fin">Fecha de finalización</label>
          </div>
          <div class="form-field col x-100">
@@ -63,7 +63,7 @@
             <label class="label" for="alojamiento">Alojamiento</label>
          </div>
          <div class="form-field col x-100">
-            <select id="requiere_transporte" class="input-text js-input">
+            <select id="requiere_transporte" class="input-text js-input not-empty">
                <option value="si">Sí</option>
                <option value="no">No</option>
             </select>
