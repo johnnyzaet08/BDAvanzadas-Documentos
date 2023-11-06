@@ -7,6 +7,15 @@ socket.on('modifydeleteRequestFRONT', (message) => {
     }
 });
 
+socket.on('modifydeleteRequestM', (message) => {
+    if(message == "Successful"){
+        window.location.reload();
+        alert("Solicitud actualizada exitosamente");
+    }else{
+        alert(message);
+    }
+});
+
 function modifyTravelRequest() {
     let nombre = document.getElementById("nombre").value;
     let puesto = document.getElementById("puesto").value;
@@ -21,7 +30,7 @@ function modifyTravelRequest() {
     let alojamiento = document.getElementById("alojamiento").value;
     let requiere_transporte = document.getElementById("requiere_transporte").value;
 
-    socket.emit("travelRequestAPI/add", nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte);
+    socket.emit("requestsAPI/update", ID_Find, nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte);
 };
 
 socket.on('modifydeleteRequestFront', (data) => {

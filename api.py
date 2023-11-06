@@ -1,6 +1,7 @@
 from flask_socketio import SocketIO
 from bson.objectid import ObjectId
 from pymongo import MongoClient
+from datetime import datetime
 from flask import session
 
 socketio = SocketIO()
@@ -110,13 +111,36 @@ def changeEstado(requestsID, estado):
 
 ### Update a solicitud
 @socketio.on("requestsAPI/update")
-def addRequest(usuario_id, updated_data):
+def addRequest(request_id, nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte):
     db = get_mongodb_db()
     try:
-        db.solicitudes.updateOne({'usuario_id': usuario_id},{'$set': updated_data})
+        print("hola1")
+        id_buscado = ObjectId(request_id)
+        request_data = {
+            'nombre': nombre,
+            'puesto': puesto,
+            'departamento': departamento,
+            'tipo_viaje': tipo_viaje,
+            'pais_destino': pais_destino,
+            'motivo': motivo,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'aerolinea': aerolinea,
+            'precio_boletos': precio_boletos,
+            'alojamiento': alojamiento,
+            'requiere_transporte': requiere_transporte,
+            'estado': 'Pendiente'
+        }
+        resultado = db.solicitudes.update_one({'_id': id_buscado, 'usuario_id': session['username']},{'$set': request_data})
+        print("hola3")
         socketio.emit("requestsAPI", "Successful")
+        print("hola2")
+        if resultado.modified_count == 1:
+            socketio.emit("modifydeleteRequestM", "Successful")
+        else:
+            socketio.emit("modifydeleteRequestM", "Error")
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("modifydeleteRequestM", "Error Catch")
 
 ##### Get solicitudes
 
@@ -187,58 +211,62 @@ def changeEstado(id):
 def getDestino(destino):
     db = get_mongodb_db()
     try:
-        users = list(db.solicitudes.find({'pais_destino': destino}, {fecha_inicio :1,motivo: 1, usuario_id:1 }))
-        socketio.emit("requestsAPI/get", users)
+        users = list(db.solicitudes.find({'pais_destino': destino}, {'nombre':1, 'fecha_inicio':1, 'motivo': 1, '_id':0 }))
+        socketio.emit("specificRequestFront", users)
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("specificRequestFront", "Error")
     
 ##### consultar un viajes programados
 @socketio.on("requestsAPI/programedTravels")
 def getTravels(mes, año):
-    db = get_mongodb_db()
     try:
-        solicitudesAprobadas =  db.solicitudes.find({'estado': 'Aprobada', 'fecha_inicio': { '$gte': f'{año}-{mes:02d}-01', '$lt': f'{año}-{mes+1:02d}-01'}})
-        usuarios =[]
-        for solicitud in solicitudesAprobadas:
-            usuario = db.usuarios.findOne({ 'usuario_id': solicitud['usuario_id'] })
-            usuarios.append({
-                'nombre': usuario.nombre,
-                'Departamento': usuario.departamento
-            })
-        socketio.emit("scheduledRequestFront", usuarios)
+        mes = int(mes)
+        año = int(año)
+        db = get_mongodb_db()
+        fecha_inicio = datetime(año, mes, 1)
+        if mes == 12:
+            fecha_fin = datetime(año + 1, 1, 1)  # Año nuevo si es diciembre
+        else:
+            fecha_fin = datetime(año, mes + 1, 1)
+        solicitudesAprobadas = list(db.solicitudes.find(
+            {
+                'estado': 'Aprobada',
+                'fecha_inicio': {
+                    '$gte': fecha_inicio,
+                    '$lt': fecha_fin
+                }
+            },
+            {
+                'nombre': 1,
+                'departamento': 1,
+                '_id': 0
+            }
+        ))
+        socketio.emit("scheduledRequestFront", solicitudesAprobadas)
     except Exception as e:
-        socketio.emit("scheduledRequestFront", e)
+        socketio.emit("scheduledRequestFront", "Error")
 
 ### Consultar viajes internacionales
 @socketio.on("requestsAPI/InternationalTravels")
 def getTravelsInternacional(trimestre, año):
-    if trimestre == 1:
-        start_date = datetime(año, 1, 1)
-        end_date = datetime(año, 3, 31)
-    elif trimestre == 2:
-        start_date = datetime(año, 4, 1)
-        end_date = datetime(año, 6, 30)
-    elif trimestre == 3:
-        start_date = datetime(año, 7, 1)
-        end_date = datetime(año, 9, 30)
-    elif trimestre == 4:
-        start_date = datetime(año, 10, 1)
-        end_date = datetime(año, 12, 31)
-    else:
-        print("Trimestre no válido.")
-        return
     try:
-        solicitudes_internacionales = db.solicitudes.find({'internacional': True,'fecha_inicio': {'$gte': start_date, '$lte': end_date}})
-        usuarios = []
-        for solicitud in solicitudes_internacionales:
-            usuario = db.usuarios.find_one({'usuario_id': solicitud['usuario_id']})
-            if usuario:
-                usuarios.append({
-                    'nombre' : usuario['nombre'],
-                    'pais_destino' : solicitud['pais_destino']
-                })
-                print(f'Nombre del colaborador: {nombre}, País de destino: {pais_destino}')
-        
-        socketio.emit("requestsAPI/getInternationalTravels", usuarios)
+        db = get_mongodb_db()
+        trimestre = int(trimestre)
+        año = int(año)
+        if trimestre == 1:
+            start_date = datetime(año, 1, 1)
+            end_date = datetime(año, 3, 31)
+        elif trimestre == 2:
+            start_date = datetime(año, 4, 1)
+            end_date = datetime(año, 6, 30)
+        elif trimestre == 3:
+            start_date = datetime(año, 7, 1)
+            end_date = datetime(año, 9, 30)
+        elif trimestre == 4:
+            start_date = datetime(año, 10, 1)
+            end_date = datetime(año, 12, 31)
+
+        solicitudes_internacionales = list(db.solicitudes.find({'tipo_viaje': 'internacional','fecha_inicio': {'$gte': start_date, '$lte': end_date}}, {'nombre':1, 'pais_destino':1}))
+        socketio.emit("internationalRequestFront", solicitudes_internacionales)
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("internationalRequestFront", "Error")

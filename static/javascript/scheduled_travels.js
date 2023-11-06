@@ -1,9 +1,4 @@
 function searchData () {
-    socket.emit('isAdminAPI');
-}
-
-window.onload = function() {
-
     var search_btn = document.getElementById('find-btn')
     search_btn.addEventListener("click", searchData)
 
@@ -11,6 +6,13 @@ window.onload = function() {
     let ano = document.getElementById("ano").value;
 
     socket.emit('requestsAPI/programedTravels', mes, ano);
+}
+
+window.onload = function() {
+    socket.emit('isAdminAPI');
+    search_btn = document.getElementById('find-btn');
+
+    search_btn.addEventListener('click', searchData);
 };
 
 socket.on('scheduledRequestFront', (data) => {
