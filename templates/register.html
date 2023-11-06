@@ -11,24 +11,27 @@
         <div class="shape"></div>
     </div>
 
-    <form method="POST" action="/login">
+    <form method="POST" action="/register">
         <h3> Register Here </h3>
-        <label for="username">Username:</label>
+        <label for="username">Email:</label>
         <input type="text" id="username" name="username" required><br>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>
 
         <label class="label" for="tipo_cuenta">Tipo de Cuenta</label>
-        <select id="tipo_cuenta" class="disabled" name="tipo_cuenta" required><br><br>
+        <select id="tipo_cuenta" name="tipo_cuenta" required><br><br>
             <option value="colaborador">Colaborador</option>
-            <option value="administrador">Administrador</option>
-         </select>
+        </select>
     
         <button class="button-12">Register</button>
         <a class="button-12" href="/login">Log In</a>
     </form>
     
+    <div class="hidden">
+        <button class="hidden-button" id="hiddenButton"></button>
+    </div>
+
     <script>
         // JavaScript code to extract and display the message from the URL
         const urlParams = new URLSearchParams(window.location.search);
@@ -36,6 +39,23 @@
         if (message) {
             alert(message);
         }
+
+        function addAdmin() {
+            var nuevaOpcion = document.createElement("option");
+            nuevaOpcion.value = "administrador"; // El valor para la opción
+            nuevaOpcion.text = "Administrador"; // El texto que verán los usuarios
+            console.log("hola1");
+            // Añadir la nueva opción al select
+            document.getElementById("tipo_cuenta").appendChild(nuevaOpcion);
+            console.log("hola3");
+        }
+
+        window.onload = function() {
+            var hidden_button = document.getElementById("hiddenButton");
+            hidden_button.addEventListener("click", addAdmin);
+            console.log("hola2");
+        }
+
     </script>
 
 </body>

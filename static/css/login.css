@@ -125,3 +125,18 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
+
+
+.hidden{
+    display:  block;
+    background-color: transparent;
+    height: 25px;
+    width: 25px;
+    margin-top: 700px;
+    margin-left: 1100px;
+}
+
+.hidden-button{
+    background-color: transparent;
+    border-color: transparent;
+}

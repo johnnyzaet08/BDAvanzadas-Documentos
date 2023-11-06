@@ -15,23 +15,23 @@
       <h1 class="title">Modificar/Eliminar una Solicitud de Viaje</h1>
       <form id="travelRequestForm" class="contact-form row">
          <div class="form-field col x-100">
-            <input id="id" class="input-text js-input" type="number" required>
-            <label class="label" for="id">ID de Solicitud</label>
+            <input id="id_input" class="input-text js-input" type="text" required>
+            <label class="label" for="id_input">ID de Solicitud</label>
          </div>
          <div class="form-field col x-100 align-center">
             <label id="find-btn" class="submit-btn">BUSCAR</label>
          </div>
          <div id="travelForm" class="contact-form row">
             <div class="form-field col x-100 ">
-               <input id="nombre" class="input-text js-input" type="text" required>
+               <input id="nombre" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="nombre">Nombre completo</label>
             </div>
             <div class="form-field col x-100 ">
-               <input id="puesto" class="input-text js-input" type="text" required>
+               <input id="puesto" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="puesto">Puesto</label>
             </div>
             <div class="form-field col x-100 ">
-               <input id="departamento" class="input-text js-input" type="text" required>
+               <input id="departamento" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="departamento">Departamento</label>
             </div>
             <div class="form-field col x-100 ">
@@ -42,11 +42,11 @@
                <label class="label" for="tipo_viaje">Tipo de Viaje</label>
             </div>
             <div class="form-field col x-100">
-               <input id="pais_destino" class="input-text js-input" type="text" required>
+               <input id="pais_destino" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="pais_destino">País de destino</label>
             </div>
             <div class="form-field col x-100">
-               <input id="motivo" class="input-text js-input" type="text" required>
+               <input id="motivo" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="motivo">Motivo del viaje</label>
             </div>
             <div class="form-field col x-50 ">
@@ -58,15 +58,15 @@
                <label class="label" for="fecha_fin">Fecha de finalización</label>
             </div>
             <div class="form-field col x-100">
-               <input id="aerolinea" class="input-text js-input" type="text" required>
+               <input id="aerolinea" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="aerolinea">Aerolínea</label>
             </div>
             <div class="form-field col x-100 ">
-               <input id="precio_boletos" class="input-text js-input" type="number" required>
+               <input id="precio_boletos" class="input-text js-input not-empty" type="number" required>
                <label class="label" for="precio_boletos">Precio de boletos</label>
             </div>
             <div class="form-field col x-100 ">
-               <input id="alojamiento" class="input-text js-input" type="text" required>
+               <input id="alojamiento" class="input-text js-input not-empty" type="text" required>
                <label class="label" for="alojamiento">Alojamiento</label>
             </div>
             <div class="form-field col x-100 ">

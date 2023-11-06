@@ -1,10 +1,5 @@
-const socket = io.connect('http://localhost:5000');
-
-socket.on('connect', () => {
-    console.log('Connected to server, travel request --------');
-});
-
 window.onload = function() {
+    socket.emit('isAdminAPI');
     var esFalso = true; // Cambiar a true o false según sea necesario
     var formContainer = document.getElementById("form-container");
     var destinos = ["CR","JP","AL","ES"];

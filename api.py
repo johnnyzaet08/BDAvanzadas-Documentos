@@ -1,10 +1,11 @@
 from flask_socketio import SocketIO
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 from flask import session
 
 socketio = SocketIO()
 
-MONGODB_URI = 'mongodb://localhost:27017/'
+MONGODB_URI = 'mongodb://localhost:8080/'
 DB_NAME = 'consultoria'
 
 singleton = False
@@ -25,6 +26,11 @@ def get_mongodb_db():
     return client[DB_NAME]
 
 
+@socketio.on("isAdminAPI")
+def isAdmin():
+    socketio.emit('isAdminFront', session['admin'])
+
+
 ################################################ ADD / UPDATE ###########################################
 def addUser(correo, contraseña, tipo):
     db = get_mongodb_db()
@@ -35,19 +41,18 @@ def addUser(correo, contraseña, tipo):
     }
     try:
         db.usuarios.insert_one(user)
-        socketio.emit("usersAPI", "Successful")
+        return True
     except Exception as e:
-        socketio.emit("usersAPI", e)
+        return False
 
 #### GET usuarios name by email
-def getUsers(correo):
+def getUsersEmail(correo):
     db = get_mongodb_db()
     try:
-        users = list(db.usuarios.find({'correo': correo}, { nombre:1, tipo:1}))
-        socketio.emit("usersAPI/get", users)
+        users = list(db.usuarios.find({'correo': correo}, {'contraseña':1, 'tipo':1}))
+        return users
     except Exception as e:
-        socketio.emit("usersAPI", e)
-
+        return None
 
 #### GET usuarios
 @socketio.on("usersAPI/get")
@@ -64,40 +69,44 @@ def getUsers():
 ### Add a solicitud
 @socketio.on("requestsAPI/add")
 def addRequest(nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte):
-    db = get_mongodb_db()
-    usuario_id = session['usuario']
-    request_data = {
-        'usuario_id': usuario_id,
-        'nombre': nombre,
-        'puesto': puesto,
-        'departamento': departamento,
-        'tipo_viaje': tipo_viaje,
-        'pais_destino': pais_destino,
-        'motivo': motivo,
-        'fecha_inicio': fecha_inicio,
-        'fecha_fin': fecha_fin,
-        'aerolinea': aerolinea,
-        'precio_boletos': precio_boletos,
-        'alojamiento': alojamiento,
-        'requiere_transporte': requiere_transporte,
-        'estado': 'Pendiente'
-    }
     try:
+        db = get_mongodb_db()
+        usuario_id = session['username']
+        request_data = {
+            'usuario_id': usuario_id,
+            'nombre': nombre,
+            'puesto': puesto,
+            'departamento': departamento,
+            'tipo_viaje': tipo_viaje,
+            'pais_destino': pais_destino,
+            'motivo': motivo,
+            'fecha_inicio': fecha_inicio,
+            'fecha_fin': fecha_fin,
+            'aerolinea': aerolinea,
+            'precio_boletos': precio_boletos,
+            'alojamiento': alojamiento,
+            'requiere_transporte': requiere_transporte,
+            'estado': 'Pendiente'
+        }
         db.solicitudes.insert_one(request_data)
-        socketio.emit("requestsAPI", "Successful")
+        socketio.emit("travelRequestAPI", "Successful")
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("travelRequestAPI", e)
 
 #### Change status
 @socketio.on("requestsAPI/estado")
-def changeEstado(usuario_id, estado):
+def changeEstado(requestsID, estado):
     db = get_mongodb_db()
     try:
+        id_buscado = ObjectId(requestsID)
         estadoUpdate = { "estado" : estado}
-        user =db.solicitudes.updateOne({'usuario_id': usuario_id},{'$set': estadoUpdate})
-        socketio.emit("usersAPI/get", user)
+        resultado = db.solicitudes.update_one({'_id': id_buscado},{'$set': estadoUpdate})
+        if resultado.modified_count == 1:
+            socketio.emit("evaluateRequestM", "Successful")
+        else:
+            socketio.emit("evaluateRequestM", "Error")
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("evaluateRequestM", "Error catch")
 
 ### Update a solicitud
 @socketio.on("requestsAPI/update")
@@ -105,38 +114,73 @@ def addRequest(usuario_id, updated_data):
     db = get_mongodb_db()
     try:
         db.solicitudes.updateOne({'usuario_id': usuario_id},{'$set': updated_data})
-        socketio.emit("requestsAPI", "Successful Updated")
+        socketio.emit("requestsAPI", "Successful")
     except Exception as e:
         socketio.emit("requestsAPI", e)
 
 ##### Get solicitudes
+
 @socketio.on("requestsAPI/getID")
-def getRequestID(id):
-    db = get_mongodb_db()
+def getRequestID(ID_Find):
     try:
-        user = list(db.solicitudes.find({'id': id}))
-        socketio.emit("requestsAPI/get", user)
+        db = get_mongodb_db()
+        id_buscado = ObjectId(ID_Find)
+        if session['admin']:
+            request = list(db.solicitudes.find({'_id': id_buscado},{'_id':0, 'usuario_id':0}))
+            socketio.emit("modifydeleteRequestFront", request)
+        else:
+            usuario_id = session['username']
+            request = list(db.solicitudes.find({'_id': id_buscado, 'usuario_id': usuario_id}, {'_id':0, 'usuario_id':0}))
+            socketio.emit("modifydeleteRequestFront", request)
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("modifydeleteRequestFront", "Error")
 
 @socketio.on("requestsAPI/get")
-def getRequest():
-    db = get_mongodb_db()
+def getRequestID():
     try:
-        users = list(db.solicitudes.find({}))
-        socketio.emit("requestsAPI/get", users)
+        db = get_mongodb_db()
+        if session['admin']:
+            requests = list(db.solicitudes.find({},{'usuario_id':0}))
+            for i in requests:
+                i["_id"] = str(i["_id"])
+            socketio.emit("historyRequestFront", requests)
+        else:
+            usuario_id = session['username']
+            requests = list(db.solicitudes.find({'usuario_id': usuario_id}, {'usuario_id':0}))
+            socketio.emit("historyRequestFront", requests)
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("historyRequestFront", "Error")
+
+@socketio.on("requestsAPI/getPendientes")
+def getPendientesRequest():
+    try:
+        db = get_mongodb_db()
+        if session['admin']:
+            requests = list(db.solicitudes.find({'estado':'Pendiente'},{'usuario_id':0}))
+            for i in requests:
+                i["_id"] = str(i["_id"])
+            socketio.emit("evaluateRequestFront", requests)
+        else:
+            usuario_id = session['username']
+            requests = list(db.solicitudes.find({'usuario_id': usuario_id}, {'usuario_id':0}))
+            socketio.emit("evaluateRequestFront", requests)
+    except Exception as e:
+        socketio.emit("evaluateRequestFront", "Error")
 
 #### delete solicitud
 @socketio.on("requestsAPI/deleteOne")
-def changeEstado(usuario_id):
-    db = get_mongodb_db()
+def changeEstado(id):
     try:
-        user = db.solicitudes.deleteOne({'usuario_id': usuario_id})
-        socketio.emit("requestsAPI", "Successful deleted")
+        db = get_mongodb_db()
+        id_buscado = ObjectId(id)
+        resultado = db.solicitudes.delete_one({'_id': id_buscado})
+        if resultado.deleted_count == 1:
+            socketio.emit("modifydeleteRequestFRONT", "Successful")
+        else:
+            socketio.emit("modifydeleteRequestFRONT", "Error 1")
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        print(e)
+        socketio.emit("modifydeleteRequestFRONT", "Error catch")
 
 ##### consultar un destino especifico
 @socketio.on("requestsAPI/getDestine")
@@ -161,9 +205,9 @@ def getTravels(mes, año):
                 'nombre': usuario.nombre,
                 'Departamento': usuario.departamento
             })
-        socketio.emit("requestsAPI/get", usuarios)
+        socketio.emit("scheduledRequestFront", usuarios)
     except Exception as e:
-        socketio.emit("requestsAPI", e)
+        socketio.emit("scheduledRequestFront", e)
 
 ### Consultar viajes internacionales
 @socketio.on("requestsAPI/InternationalTravels")

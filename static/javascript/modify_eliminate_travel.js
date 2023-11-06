@@ -1,9 +1,11 @@
-const socket = io.connect('http://localhost:5000');
-
-socket.on('connect', () => {
-    console.log('Connected to server, travel request --------');
+socket.on('modifydeleteRequestFRONT', (message) => {
+    if(message == "Successful"){
+        document.getElementById("travelRequestForm").reset();
+        alert("Solicitud eliminada exitosamente");
+    }else{
+        alert(message);
+    }
 });
-
 
 function modifyTravelRequest() {
     let nombre = document.getElementById("nombre").value;
@@ -22,6 +24,21 @@ function modifyTravelRequest() {
     socket.emit("travelRequestAPI/add", nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte);
 };
 
+socket.on('modifydeleteRequestFront', (data) => {
+    document.getElementById("nombre").value = data[0]['nombre'];
+    document.getElementById("puesto").value = data[0]['puesto'];
+    document.getElementById("departamento").value = data[0]['departamento'];
+    document.getElementById("tipo_viaje").value = data[0]['tipo_viaje'];
+    document.getElementById("pais_destino").value = data[0]['pais_destino'];
+    document.getElementById("motivo").value = data[0]['motivo'];
+    document.getElementById("fecha_inicio").value = data[0]['fecha_inicio'];
+    document.getElementById("fecha_fin").value = data[0]['fecha_fin'];
+    document.getElementById("aerolinea").value = data[0]['aerolinea'];
+    document.getElementById("precio_boletos").value = data[0]['precio_boletos'];
+    document.getElementById("alojamiento").value = data[0]['alojamiento'];
+    document.getElementById("requiere_transporte").value = data[0]['requiere_transporte'];
+});
+
 var ID_Find;
 
 function deleteTravelRequest() {
@@ -30,13 +47,15 @@ function deleteTravelRequest() {
 
 
 function findTravelRequest() {
-    ID_Find = nombre = document.getElementById("id").value;
-    socket.emit("requestsAPI/getID", ID_Find)
-    console.log(ID_Find)
+    var in_find = document.getElementById("id_input").value;
+    ID_Find = in_find;
+    socket.emit("requestsAPI/getID", in_find)
 };
 
 
 window.onload = function() {
+    socket.emit('isAdminAPI');
+    
     var esFalso = true; // Cambiar a true o false según sea necesario
     var travelForm = document.getElementById("travelForm");
     

@@ -1,8 +1,3 @@
-const socket = io.connect('http://localhost:5000');
-socket.on('connect', () => {
-    console.log('Connected to server, travel request');
-});
-
 socket.on('travelRequestAPI', (message) => {
     if(message == "Successful"){
         document.getElementById("travelRequestForm").reset();
@@ -26,10 +21,12 @@ function registerTravelRequest() {
     let alojamiento = document.getElementById("alojamiento").value;
     let requiere_transporte = document.getElementById("requiere_transporte").value;
 
-    socket.emit("travelRequestAPI/add", nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte);
+    socket.emit("requestsAPI/add", nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte);
 };
 
 window.onload = function() {
+    socket.emit('isAdminAPI');
+
     var inputs = document.getElementsByClassName('js-input');
     var add_btn = document.getElementById("add-btn");
 
