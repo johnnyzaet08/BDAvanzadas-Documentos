@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_cors import CORS
 from api import *
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
+app.config['CORS_HEADERS'] = 'Content-Type'
 app.static_folder = "static"
 app.static_url_path = "/static"
 app.secret_key = 'BDA-2023'
 
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 socketio.init_app(app)
 
 # Authentication check function

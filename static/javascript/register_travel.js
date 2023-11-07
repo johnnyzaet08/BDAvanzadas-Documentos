@@ -8,6 +8,7 @@ socket.on('travelRequestAPI', (message) => {
 });
 
 function registerTravelRequest() {
+    console.log("xd");
     let nombre = document.getElementById("nombre").value;
     let puesto = document.getElementById("puesto").value;
     let departamento = document.getElementById("departamento").value;

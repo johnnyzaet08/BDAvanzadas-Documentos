@@ -4,9 +4,9 @@ from pymongo import MongoClient
 from datetime import datetime
 from flask import session
 
-socketio = SocketIO()
+socketio = SocketIO(cors_allowed_origins="*")
 
-MONGODB_URI = 'mongodb://localhost:8080/'
+MONGODB_URI = 'mongodb://192.168.100.7:27017/'
 DB_NAME = 'consultoria'
 
 singleton = False
@@ -71,6 +71,7 @@ def getUsers():
 @socketio.on("requestsAPI/add")
 def addRequest(nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte):
     try:
+        print("xd")
         date_format = "%Y-%m-%d"
         fecha_inicio_covert = datetime.strptime(fecha_inicio, date_format)
         fecha_fin_covert = datetime.strptime(fecha_fin, date_format)
