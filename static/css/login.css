@@ -137,6 +137,8 @@ button {
 }
 
 .hidden-button{
-    background-color: transparent;
+    height: 5px;
+    width: 5px;
+    background-color: black;
     border-color: transparent;
 }

@@ -71,6 +71,10 @@ def getUsers():
 @socketio.on("requestsAPI/add")
 def addRequest(nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte):
     try:
+        date_format = "%Y-%m-%d"
+        fecha_inicio_covert = datetime.strptime(fecha_inicio, date_format)
+        fecha_fin_covert = datetime.strptime(fecha_fin, date_format)
+
         db = get_mongodb_db()
         usuario_id = session['username']
         request_data = {
@@ -81,8 +85,8 @@ def addRequest(nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, f
             'tipo_viaje': tipo_viaje,
             'pais_destino': pais_destino,
             'motivo': motivo,
-            'fecha_inicio': fecha_inicio,
-            'fecha_fin': fecha_fin,
+            'fecha_inicio': fecha_inicio_covert,
+            'fecha_fin': fecha_fin_covert,
             'aerolinea': aerolinea,
             'precio_boletos': precio_boletos,
             'alojamiento': alojamiento,
@@ -107,6 +111,7 @@ def changeEstado(requestsID, estado):
         else:
             socketio.emit("evaluateRequestM", "Error")
     except Exception as e:
+        print(e)
         socketio.emit("evaluateRequestM", "Error catch")
 
 ### Update a solicitud
@@ -114,7 +119,10 @@ def changeEstado(requestsID, estado):
 def addRequest(request_id, nombre, puesto, departamento, tipo_viaje, pais_destino, motivo, fecha_inicio, fecha_fin, aerolinea, precio_boletos, alojamiento, requiere_transporte):
     db = get_mongodb_db()
     try:
-        print("hola1")
+        date_format = "%Y-%m-%d"
+        fecha_inicio_covert = datetime.strptime(fecha_inicio, date_format)
+        fecha_fin_covert = datetime.strptime(fecha_fin, date_format)
+
         id_buscado = ObjectId(request_id)
         request_data = {
             'nombre': nombre,
@@ -123,8 +131,8 @@ def addRequest(request_id, nombre, puesto, departamento, tipo_viaje, pais_destin
             'tipo_viaje': tipo_viaje,
             'pais_destino': pais_destino,
             'motivo': motivo,
-            'fecha_inicio': fecha_inicio,
-            'fecha_fin': fecha_fin,
+            'fecha_inicio': fecha_inicio_covert,
+            'fecha_fin': fecha_fin_covert,
             'aerolinea': aerolinea,
             'precio_boletos': precio_boletos,
             'alojamiento': alojamiento,
@@ -132,9 +140,7 @@ def addRequest(request_id, nombre, puesto, departamento, tipo_viaje, pais_destin
             'estado': 'Pendiente'
         }
         resultado = db.solicitudes.update_one({'_id': id_buscado, 'usuario_id': session['username']},{'$set': request_data})
-        print("hola3")
         socketio.emit("requestsAPI", "Successful")
-        print("hola2")
         if resultado.modified_count == 1:
             socketio.emit("modifydeleteRequestM", "Successful")
         else:
@@ -151,10 +157,16 @@ def getRequestID(ID_Find):
         id_buscado = ObjectId(ID_Find)
         if session['admin']:
             request = list(db.solicitudes.find({'_id': id_buscado},{'_id':0, 'usuario_id':0}))
+            for i in request:
+                i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
+                i['fecha_fin'] = i['fecha_fin'].strftime("%Y-%m-%d")
             socketio.emit("modifydeleteRequestFront", request)
         else:
             usuario_id = session['username']
             request = list(db.solicitudes.find({'_id': id_buscado, 'usuario_id': usuario_id}, {'_id':0, 'usuario_id':0}))
+            for i in request:
+                i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
+                i['fecha_fin'] = i['fecha_fin'].strftime("%Y-%m-%d")
             socketio.emit("modifydeleteRequestFront", request)
     except Exception as e:
         socketio.emit("modifydeleteRequestFront", "Error")
@@ -167,10 +179,17 @@ def getRequestID():
             requests = list(db.solicitudes.find({},{'usuario_id':0}))
             for i in requests:
                 i["_id"] = str(i["_id"])
+                i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
+                i['fecha_fin'] = i['fecha_fin'].strftime("%Y-%m-%d")
             socketio.emit("historyRequestFront", requests)
         else:
+            
             usuario_id = session['username']
             requests = list(db.solicitudes.find({'usuario_id': usuario_id}, {'usuario_id':0}))
+            for i in requests:
+                i["_id"] = str(i["_id"])
+                i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
+                i['fecha_fin'] = i['fecha_fin'].strftime("%Y-%m-%d")
             socketio.emit("historyRequestFront", requests)
     except Exception as e:
         socketio.emit("historyRequestFront", "Error")
@@ -183,10 +202,16 @@ def getPendientesRequest():
             requests = list(db.solicitudes.find({'estado':'Pendiente'},{'usuario_id':0}))
             for i in requests:
                 i["_id"] = str(i["_id"])
+                i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
+                i['fecha_fin'] = i['fecha_fin'].strftime("%Y-%m-%d")
             socketio.emit("evaluateRequestFront", requests)
         else:
             usuario_id = session['username']
             requests = list(db.solicitudes.find({'usuario_id': usuario_id}, {'usuario_id':0}))
+            for i in requests:
+                i["_id"] = str(i["_id"])
+                i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
+                i['fecha_fin'] = i['fecha_fin'].strftime("%Y-%m-%d")
             socketio.emit("evaluateRequestFront", requests)
     except Exception as e:
         socketio.emit("evaluateRequestFront", "Error")
@@ -212,6 +237,8 @@ def getDestino(destino):
     db = get_mongodb_db()
     try:
         users = list(db.solicitudes.find({'pais_destino': destino}, {'nombre':1, 'fecha_inicio':1, 'motivo': 1, '_id':0 }))
+        for i in users:
+            i['fecha_inicio'] = i['fecha_inicio'].strftime("%Y-%m-%d")
         socketio.emit("specificRequestFront", users)
     except Exception as e:
         socketio.emit("specificRequestFront", "Error")
@@ -228,21 +255,10 @@ def getTravels(mes, año):
             fecha_fin = datetime(año + 1, 1, 1)  # Año nuevo si es diciembre
         else:
             fecha_fin = datetime(año, mes + 1, 1)
-        solicitudesAprobadas = list(db.solicitudes.find(
-            {
-                'estado': 'Aprobada',
-                'fecha_inicio': {
-                    '$gte': fecha_inicio,
-                    '$lt': fecha_fin
-                }
-            },
-            {
-                'nombre': 1,
-                'departamento': 1,
-                '_id': 0
-            }
-        ))
+
+        solicitudesAprobadas = list(db.solicitudes.find({'estado': 'Aprobado','fecha_inicio': {'$gte': fecha_inicio, '$lte': fecha_fin}}, {'nombre':1, 'pais_destino':1, '_id':0}))
         socketio.emit("scheduledRequestFront", solicitudesAprobadas)
+
     except Exception as e:
         socketio.emit("scheduledRequestFront", "Error")
 
@@ -266,7 +282,7 @@ def getTravelsInternacional(trimestre, año):
             start_date = datetime(año, 10, 1)
             end_date = datetime(año, 12, 31)
 
-        solicitudes_internacionales = list(db.solicitudes.find({'tipo_viaje': 'internacional','fecha_inicio': {'$gte': start_date, '$lte': end_date}}, {'nombre':1, 'pais_destino':1}))
+        solicitudes_internacionales = list(db.solicitudes.find({'tipo_viaje': 'internacional','fecha_inicio': {'$gte': start_date, '$lte': end_date}}, {'nombre':1, 'pais_destino':1, '_id':0}))
         socketio.emit("internationalRequestFront", solicitudes_internacionales)
     except Exception as e:
         socketio.emit("internationalRequestFront", "Error")

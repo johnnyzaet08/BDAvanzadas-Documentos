@@ -1,4 +1,7 @@
 function searchData () {
+    var formContainer = document.getElementById("form-container");
+    formContainer.innerHTML = '';
+
     var search_btn = document.getElementById('find-btn')
     search_btn.addEventListener("click", searchData)
 
